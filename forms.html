@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Principio de Integridad</title>
+  <style>
+    :root {
+      --verde-950: #052e16;
+      --verde-800: #166534;
+      --verde-700: #15803d;
+      --verde-600: #16a34a;
+      --verde-200: #bbf7d0;
+      --verde-100: #dcfce7;
+      --verde-50:  #f0fdf4;
+      --texto:     #1f2d24;
+      --gris:      #5b6b60;
+      --blanco:    #ffffff;
+      --error:     #b91c1c;
+      --error-bg:  #fee2e2;
+      --radio:     14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, sans-serif;
+      color: var(--texto);
+      background: var(--verde-50);
+      line-height: 1.6;
+    }
+
+    /* ---------- Encabezado ---------- */
+    header {
+      background: linear-gradient(135deg, var(--verde-950), var(--verde-700));
+      color: var(--blanco);
+      padding: 56px 16px 72px;
+      text-align: center;
+    }
+    header p.etiqueta {
+      display: inline-block;
+      margin: 0 0 12px;
+      padding: 4px 14px;
+      border: 1px solid rgba(255,255,255,.4);
+      border-radius: 999px;
+      font-size: .85rem;
+      letter-spacing: .05em;
+      text-transform: uppercase;
+    }
+    header h1 { margin: 0; font-size: clamp(1.9rem, 5vw, 2.8rem); }
+    header p.sub { margin: 8px 0 0; font-size: 1.1rem; opacity: .9; }
+
+    main {
+      max-width: 860px;
+      margin: -40px auto 48px;
+      padding: 0 16px;
+    }
+
+    .tarjeta {
+      background: var(--blanco);
+      border-radius: var(--radio);
+      padding: 28px;
+      margin-bottom: 24px;
+      box-shadow: 0 6px 20px rgba(5, 46, 22, .08);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--verde-800);
+      font-size: 1.45rem;
+      border-left: 5px solid var(--verde-600);
+      padding-left: 12px;
+    }
+    h3 { margin: 0 0 8px; color: var(--verde-700); }
+
+    /* ---------- Introducción ---------- */
+    .dos-columnas {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      margin: 20px 0;
+    }
+    .valor {
+      background: var(--verde-50);
+      border: 1px solid var(--verde-200);
+      border-radius: var(--radio);
+      padding: 20px;
+    }
+    .valor .icono { font-size: 1.8rem; }
+    .cita {
+      font-style: italic;
+      color: var(--verde-800);
+      border-left: 3px solid var(--verde-600);
+      padding-left: 10px;
+      margin: 10px 0;
+    }
+    .cita span { display: block; font-style: normal; font-size: .85rem; color: var(--gris); }
+    .valor ul { margin: 8px 0 0; padding-left: 20px; }
+
+    .puente {
+      background: var(--verde-800);
+      color: var(--blanco);
+      border-radius: var(--radio);
+      padding: 18px 20px;
+    }
+    .puente strong { color: var(--verde-200); }
+
+    /* ---------- Formulario ---------- */
+    .datos {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 16px;
+    }
+    label.campo { display: block; font-weight: 600; margin-bottom: 6px; }
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 11px 13px;
+      font: inherit;
+      border: 2px solid var(--verde-200);
+      border-radius: 10px;
+      background: var(--blanco);
+      color: var(--texto);
+    }
+    input[type="text"]:focus, textarea:focus {
+      outline: none;
+      border-color: var(--verde-600);
+      box-shadow: 0 0 0 3px var(--verde-100);
+    }
+    textarea { min-height: 110px; resize: vertical; }
+
+    fieldset.pregunta {
+      border: 2px solid var(--verde-100);
+      border-radius: var(--radio);
+      padding: 18px 20px;
+      margin: 0 0 18px;
+      transition: border-color .2s;
+    }
+    fieldset.pregunta legend {
+      font-weight: 700;
+      padding: 0 6px;
+      color: var(--verde-950);
+    }
+    .num {
+      display: inline-block;
+      background: var(--verde-600);
+      color: var(--blanco);
+      border-radius: 50%;
+      width: 28px; height: 28px;
+      text-align: center;
+      line-height: 28px;
+      margin-right: 6px;
+      font-size: .9rem;
+    }
+    .opcion {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 9px 12px;
+      margin: 6px 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .opcion:hover { background: var(--verde-50); }
+    .opcion input { accent-color: var(--verde-700); margin-top: 5px; }
+    .ayuda { font-size: .9rem; color: var(--gris); margin: 0 0 6px; }
+
+    .seccion-titulo {
+      margin: 30px 0 14px;
+      color: var(--verde-700);
+      font-size: 1.15rem;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    /* Estados después de revisar */
+    fieldset.correcta   { border-color: var(--verde-600); background: var(--verde-50); }
+    fieldset.incorrecta { border-color: var(--error); background: var(--error-bg); }
+    fieldset.falta      { border-color: #d97706; }
+    .retro { margin: 10px 0 0; font-size: .95rem; font-weight: 600; }
+    .correcta .retro   { color: var(--verde-800); }
+    .incorrecta .retro { color: var(--error); }
+    .opcion.es-correcta {
+      background: var(--verde-100);
+      border: 2px solid var(--verde-600);
+      font-weight: 600;
+    }
+    .opcion.es-correcta::after {
+      content: "✔ Respuesta correcta";
+      margin-left: auto;
+      font-size: .8rem;
+      color: var(--verde-800);
+      white-space: nowrap;
+    }
+
+    .botones { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 10px; }
+    button {
+      font: inherit;
+      font-weight: 600;
+      padding: 12px 26px;
+      border-radius: 999px;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-principal { background: var(--verde-700); color: var(--blanco); }
+    .btn-principal:hover { background: var(--verde-800); }
+    .btn-secundario { background: var(--verde-100); color: var(--verde-800); }
+    .btn-secundario:hover { background: var(--verde-200); }
+
+    #aviso { color: var(--error); font-weight: 600; margin: 10px 0 0; }
+
+    /* ---------- Resultado ---------- */
+    #resultado { display: none; text-align: center; }
+    #resultado .nota {
+      font-size: 3rem;
+      font-weight: 800;
+      color: var(--verde-700);
+      margin: 6px 0;
+    }
+    #resultado .reflexiones { text-align: left; margin-top: 18px; }
+    #resultado .reflexiones p {
+      background: var(--verde-50);
+      border-left: 4px solid var(--verde-600);
+      padding: 10px 14px;
+      border-radius: 6px;
+      white-space: pre-wrap;
+    }
+
+    footer { text-align: center; color: var(--gris); font-size: .9rem; padding: 0 16px 32px; }
+
+    @media (max-width: 640px) {
+      .dos-columnas, .datos { grid-template-columns: 1fr; }
+      .tarjeta { padding: 20px; }
+    }
+
+    @media print {
+      header { background: var(--verde-800); -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .botones { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <p class="etiqueta">Partes 3 y 4</p>
+    <h1>El Principio de Integridad</h1>
+    <p class="sub">Humildad y Sensatez</p>
+  </header>
+
+  <main>
+
+    <!-- ===================== INTRODUCCIÓN ===================== -->
+    <section class="tarjeta">
+      <h2>Introducción</h2>
+      <p>
+        La integridad es actuar siempre de la misma forma, se esté o no frente a los demás.
+        En estas dos partes se estudian dos valores que la sostienen: la <strong>humildad</strong>,
+        que nos ayuda a vernos como realmente somos, y la <strong>sensatez</strong>, que nos ayuda a
+        pensar bien antes de actuar.
+      </p>
+
+      <div class="dos-columnas">
+        <article class="valor">
+          <div class="icono">🌱</div>
+          <h3>Humildad</h3>
+          <p class="cita">"Dios resiste a los soberbios, y da gracia a los humildes."
+            <span>1 Pedro 5:5</span></p>
+          <p>Es conocer nuestras limitaciones y actuar de acuerdo con eso. No es pensar que valemos menos,
+             sino no presumir lo que tenemos.</p>
+          <ul>
+            <li>Su contrario es la <strong>soberbia</strong>.</li>
+            <li>Nos deja reconocer errores y aprender de los fracasos.</li>
+            <li>Incluye aceptar la autoridad y escuchar consejos.</li>
+            <li>Va de la mano con la modestia y la bondad.</li>
+          </ul>
+        </article>
+
+        <article class="valor">
+          <div class="icono">🧭</div>
+          <h3>Sensatez</h3>
+          <p class="cita">"La mente del bueno está llena de pensamientos honorables."
+            <span>Proverbios 12:5</span></p>
+          <p>Viene del latín <em>sensatus</em>, "dotado de buen juicio". Es la prudencia para planear,
+             tratar a otros y pensar en las consecuencias.</p>
+          <ul>
+            <li>Su contrario es la <strong>insensatez</strong>: locura, imprudencia y lo absurdo.</li>
+            <li>Nos hace objetivos y racionales.</li>
+            <li>Toma en cuenta cómo nuestras acciones afectan a otros.</li>
+            <li>Se apoya en tolerancia, respeto, objetividad, independencia, protección y autocrítica.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="puente">
+        <strong>¿Cómo se conectan?</strong> La humildad nos permite aceptar que podemos equivocarnos;
+        la sensatez nos da el buen juicio para corregirlo. El punto donde se juntan es la
+        <strong>autocrítica</strong>: darnos cuenta del error y enmendarlo.
+      </div>
+    </section>
+
+    <!-- ===================== FORMULARIO ===================== -->
+    <section class="tarjeta" id="bloque-form">
+      <h2>Cuestionario</h2>
+      <p class="ayuda">Lee cada pregunta y elige la respuesta correcta. Al final hay dos preguntas de reflexión personal.</p>
+
+      <form id="formulario" novalidate>
+        <div class="datos">
+          <div>
+            <label class="campo" for="nombre">Nombre completo</label>
+            <input type="text" id="nombre" name="nombre" required placeholder="Escribe tu nombre">
+          </div>
+          <div>
+            <label class="campo" for="carne">Carné</label>
+            <input type="text" id="carne" name="carne" required placeholder="0000-00-00000">
+          </div>
+        </div>
+
+        <!-- Parte 3: Humildad -->
+        <h3 class="seccion-titulo">🌱 Parte 3 · Humildad</h3>
+
+        <fieldset class="pregunta" data-correcta="b">
+          <legend><span class="num">1</span>Según la RAE, ¿en qué consiste la humildad?</legend>
+          <label class="opcion"><input type="radio" name="p1" value="a"> En pensar que valemos menos que los demás.</label>
+          <label class="opcion"><input type="radio" name="p1" value="b"> En conocer nuestras limitaciones y debilidades, y actuar de acuerdo con eso.</label>
+          <label class="opcion"><input type="radio" name="p1" value="c"> En ocultar siempre nuestras cualidades.</label>
+          <label class="opcion"><input type="radio" name="p1" value="d"> En no tener metas personales.</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="c">
+          <legend><span class="num">2</span>¿Cuál es el valor contrario a la humildad?</legend>
+          <label class="opcion"><input type="radio" name="p2" value="a"> La modestia</label>
+          <label class="opcion"><input type="radio" name="p2" value="b"> La prudencia</label>
+          <label class="opcion"><input type="radio" name="p2" value="c"> La soberbia</label>
+          <label class="opcion"><input type="radio" name="p2" value="d"> La discreción</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="falso">
+          <legend><span class="num">3</span>Verdadero o falso: "La humildad es una debilidad".</legend>
+          <label class="opcion"><input type="radio" name="p3" value="verdadero"> Verdadero</label>
+          <label class="opcion"><input type="radio" name="p3" value="falso"> Falso</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="a">
+          <legend><span class="num">4</span>Según la lectura, ¿qué nos dejan los fracasos?</legend>
+          <label class="opcion"><input type="radio" name="p4" value="a"> La humildad para reconocer nuestras faltas y aprender de ellas.</label>
+          <label class="opcion"><input type="radio" name="p4" value="b"> Motivos para culpar a otros.</label>
+          <label class="opcion"><input type="radio" name="p4" value="c"> Complejos de inferioridad.</label>
+          <label class="opcion"><input type="radio" name="p4" value="d"> Nada, solo hay que olvidarlos.</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="d">
+          <legend><span class="num">5</span>Ser humilde también significa sujetarse a la autoridad. ¿Qué incluye esto?</legend>
+          <label class="opcion"><input type="radio" name="p5" value="a"> Obedecer solo cuando nos conviene.</label>
+          <label class="opcion"><input type="radio" name="p5" value="b"> Evitar cualquier consejo.</label>
+          <label class="opcion"><input type="radio" name="p5" value="c"> Hacer las cosas siempre a nuestra manera.</label>
+          <label class="opcion"><input type="radio" name="p5" value="d"> Aceptar las leyes, recibir instrucciones y pedir consejo a alguien con experiencia.</label>
+        </fieldset>
+
+        <!-- Parte 4: Sensatez -->
+        <h3 class="seccion-titulo">🧭 Parte 4 · Sensatez</h3>
+
+        <fieldset class="pregunta" data-correcta="b">
+          <legend><span class="num">6</span>La palabra <em>sensatez</em> viene del latín <em>sensatus</em>. ¿Qué significa?</legend>
+          <label class="opcion"><input type="radio" name="p6" value="a"> Lleno de sentimientos</label>
+          <label class="opcion"><input type="radio" name="p6" value="b"> Dotado de buen juicio</label>
+          <label class="opcion"><input type="radio" name="p6" value="c"> Persona con autoridad</label>
+          <label class="opcion"><input type="radio" name="p6" value="d"> Que habla mucho</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="c">
+          <legend><span class="num">7</span>¿Qué es lo opuesto a la sensatez?</legend>
+          <label class="opcion"><input type="radio" name="p7" value="a"> La tolerancia y el respeto</label>
+          <label class="opcion"><input type="radio" name="p7" value="b"> La objetividad</label>
+          <label class="opcion"><input type="radio" name="p7" value="c"> La locura, la imprudencia y lo absurdo</label>
+          <label class="opcion"><input type="radio" name="p7" value="d"> La humildad</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="tolerancia,respeto,objetividad,autocritica" data-tipo="multiple">
+          <legend><span class="num">8</span>¿Cuáles de estas cualidades se usan al aplicar la sensatez?</legend>
+          <p class="ayuda">Puedes marcar varias.</p>
+          <label class="opcion"><input type="checkbox" name="p8" value="tolerancia"> Tolerancia</label>
+          <label class="opcion"><input type="checkbox" name="p8" value="orgullo"> Orgullo</label>
+          <label class="opcion"><input type="checkbox" name="p8" value="respeto"> Respeto</label>
+          <label class="opcion"><input type="checkbox" name="p8" value="objetividad"> Objetividad</label>
+          <label class="opcion"><input type="checkbox" name="p8" value="indiferencia"> Indiferencia</label>
+          <label class="opcion"><input type="checkbox" name="p8" value="autocritica"> Autocrítica</label>
+        </fieldset>
+
+        <fieldset class="pregunta" data-correcta="a">
+          <legend><span class="num">9</span>¿Qué es la autocrítica?</legend>
+          <label class="opcion"><input type="radio" name="p9" value="a"> Darnos cuenta de que cometimos un error y corregirlo usando el sentido común.</label>
+          <label class="opcion"><input type="radio" name="p9" value="b"> Criticar a los demás para que mejoren.</label>
+          <label class="opcion"><input type="radio" name="p9" value="c"> Pensar que nunca nos equivocamos.</label>
+          <label class="opcion"><input type="radio" name="p9" value="d"> Sentirnos mal todo el tiempo por nuestros errores.</label>
+        </fieldset>
+
+        <!-- Reflexión -->
+        <h3 class="seccion-titulo">✍️ Reflexión personal</h3>
+
+        <fieldset class="pregunta" data-tipo="abierta">
+          <legend><span class="num">10</span>Cuenta una situación en la que reconociste un error. ¿Qué aprendiste?</legend>
+          <textarea name="p10" id="p10" placeholder="Escribe tu respuesta..."></textarea>
+        </fieldset>
+
+        <fieldset class="pregunta" data-tipo="abierta">
+          <legend><span class="num">11</span>¿Cómo puedes practicar la humildad y la sensatez en tu casa, trabajo o estudios?</legend>
+          <textarea name="p11" id="p11" placeholder="Escribe tu respuesta..."></textarea>
+        </fieldset>
+
+        <p id="aviso" hidden></p>
+
+        <div class="botones">
+          <button type="submit" class="btn-principal">Enviar respuestas</button>
+          <button type="button" class="btn-secundario" id="btn-limpiar">Limpiar</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- ===================== RESULTADO ===================== -->
+    <section class="tarjeta" id="resultado">
+      <h2 style="text-align:left">Resultado</h2>
+      <p id="res-nombre"></p>
+      <div class="nota" id="res-nota"></div>
+      <p id="res-mensaje"></p>
+      <div class="reflexiones">
+        <h3>Tus reflexiones</h3>
+        <p id="res-p10"></p>
+        <p id="res-p11"></p>
+      </div>
+      <div class="botones" style="justify-content:center">
+        <button type="button" class="btn-principal" onclick="window.print()">Imprimir / Guardar PDF</button>
+        <button type="button" class="btn-secundario" id="btn-otra-vez">Intentar de nuevo</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>El Principio de Integridad · Partes 3 y 4</footer>
+
+  <script>
+    const formulario = document.getElementById('formulario');
+    const aviso      = document.getElementById('aviso');
+    const resultado  = document.getElementById('resultado');
+    const preguntas  = document.querySelectorAll('fieldset.pregunta');
+
+    // Devuelve lo que la persona marcó en una pregunta
+    function respuestaDe(fieldset) {
+      const marcadas = [...fieldset.querySelectorAll('input:checked')].map(i => i.value);
+      return fieldset.dataset.tipo === 'multiple' ? marcadas.sort().join(',') : (marcadas[0] || '');
+    }
+
+    function quitarRetro(fieldset) {
+      fieldset.classList.remove('correcta', 'incorrecta', 'falta');
+      const r = fieldset.querySelector('.retro');
+      if (r) r.remove();
+      fieldset.querySelectorAll('.es-correcta').forEach(o => o.classList.remove('es-correcta'));
+      fieldset.querySelectorAll('input').forEach(i => i.disabled = false);
+    }
+
+    // Resalta las opciones correctas y devuelve su texto
+    function mostrarCorrectas(fieldset) {
+      const valores = fieldset.dataset.correcta.split(',');
+      const textos = [];
+      fieldset.querySelectorAll('input').forEach(i => {
+        if (valores.includes(i.value)) {
+          i.closest('.opcion').classList.add('es-correcta');
+          textos.push(i.closest('.opcion').textContent.trim());
+        }
+      });
+      return textos.join(', ');
+    }
+
+    function ponerRetro(fieldset, texto) {
+      const p = document.createElement('p');
+      p.className = 'retro';
+      p.textContent = texto;
+      fieldset.appendChild(p);
+    }
+
+    formulario.addEventListener('submit', (e) => {
+      e.preventDefault();
+      aviso.hidden = true;
+
+      const nombre = document.getElementById('nombre').value.trim();
+      const carne  = document.getElementById('carne').value.trim();
+      let faltan = 0;
+      let buenas = 0;
+      let total  = 0;
+
+      preguntas.forEach(f => {
+        quitarRetro(f);
+        if (f.dataset.tipo === 'abierta') {
+          if (f.querySelector('textarea').value.trim() === '') { f.classList.add('falta'); faltan++; }
+          return;
+        }
+        if (respuestaDe(f) === '') { f.classList.add('falta'); faltan++; }
+      });
+
+      if (!nombre || !carne || faltan > 0) {
+        aviso.textContent = 'Completa tu nombre, tu carné y todas las preguntas (las marcadas en naranja).';
+        aviso.hidden = false;
+        return;
+      }
+
+      // Revisar las preguntas cerradas
+      preguntas.forEach(f => {
+        if (f.dataset.tipo === 'abierta') return;
+        total++;
+        const correcta = f.dataset.correcta.split(',').sort().join(',');
+        if (respuestaDe(f) === correcta) {
+          buenas++;
+          f.classList.add('correcta');
+          ponerRetro(f, '✔ Correcto');
+        } else {
+          f.classList.add('incorrecta');
+          const textoCorrecto = mostrarCorrectas(f);
+          ponerRetro(f, '✘ Incorrecto. La respuesta correcta es: ' + textoCorrecto);
+        }
+        // Bloquea las opciones para que no se cambien después de ver la respuesta
+        f.querySelectorAll('input').forEach(i => i.disabled = true);
+      });
+
+      const porcentaje = Math.round((buenas / total) * 100);
+      document.getElementById('res-nombre').textContent = nombre + ' · Carné ' + carne;
+      document.getElementById('res-nota').textContent = buenas + ' / ' + total;
+      document.getElementById('res-mensaje').textContent =
+        porcentaje === 100 ? '¡Excelente! Dominas los dos temas.' :
+        porcentaje >= 70   ? 'Muy bien. Repasa las preguntas marcadas en rojo.' :
+                             'Vuelve a leer la introducción y revisa las preguntas en rojo.';
+      document.getElementById('res-p10').textContent = '10. ' + document.getElementById('p10').value.trim();
+      document.getElementById('res-p11').textContent = '11. ' + document.getElementById('p11').value.trim();
+
+      resultado.style.display = 'block';
+      resultado.scrollIntoView({ behavior: 'smooth' });
+    });
+
+    function limpiar() {
+      formulario.reset();
+      preguntas.forEach(quitarRetro);
+      aviso.hidden = true;
+      resultado.style.display = 'none';
+      document.getElementById('bloque-form').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    document.getElementById('btn-limpiar').addEventListener('click', limpiar);
+    document.getElementById('btn-otra-vez').addEventListener('click', limpiar);
+  </script>
+</body>
+</html>
